@@ -1,6 +1,3 @@
-# DO NOT import any additional 3rd party external libraries as they will not
-# be available to AutoLab and are not needed (or allowed)​
-
 import numpy as np
 import os
 import sys
@@ -15,10 +12,6 @@ class CNN(object):
 
     """
     A simple convolutional neural network
-
-    Here you build implement the same architecture described in Section 3.3
-    You need to specify the detailed architecture in function "get_cnn_model" below
-    The returned model architecture should be same as in Section 3.3 Figure 3
     """
 
     def __init__(self, input_width, num_input_channels, num_channels, kernel_sizes, strides,
@@ -49,17 +42,6 @@ class CNN(object):
         self.criterion = criterion
 
         self.lr = lr
-        # <---------------------
-
-        # Don't change the name of the following class attributes,
-        # the autograder will check against these attributes. But you will need to change
-        # the values in order to initialize them correctly
-
-        ## Your code goes here -->
-        # self.convolutional_layers (list Conv1d) = []
-        # self.flatten              (Flatten)     = Flatten()
-        # self.linear_layer         (Linear)      = Linear(???)
-        # <---------------------
 
         self.convolutional_layers = [Conv1d(num_input_channels, num_channels[0], kernel_sizes[0], strides[0]),
                                     Conv1d(num_channels[0], num_channels[1], kernel_sizes[1], strides[1]),
@@ -83,13 +65,9 @@ class CNN(object):
             Z (np.array): (batch_size, num_linear_neurons)
         """
 
-        ## Your code goes here -->
         for layer in self.layers:
             A = layer.forward(A)
 
-        # <---------------------
-
-        # Save output (necessary for error and loss)
         self.Z = A
 
         return self.Z
@@ -105,27 +83,17 @@ class CNN(object):
         m, _ = labels.shape
         self.loss = self.criterion.forward(self.Z, labels).sum()
         grad = self.criterion.backward()
-        # print(grad)
 
-        ## Your code goes here -->
         for i in reversed(range(len(self.layers))):
-            # if self.layers[i] != ReLU() and self.layers[i] != Sigmoid() and self.layers[i] != Tanh():
-            #     grad = self.layers[i].backward(grad)
-            # else:
-            #     grad = grad * self.layers[i].backward()
-
             if i == 7 or i == 6 or i == 4 or i == 2 or i == 0:
                 grad = self.layers[i].backward(grad)
             else:
                 grad = grad * self.layers[i].backward()
 
-
-        # <---------------------
         return grad
 
 
     def zero_grads(self):
-        # Do not modify this method
         for i in range(self.nlayers):
             self.convolutional_layers[i].conv1d_stride1.dLdW.fill(0.0)
             self.convolutional_layers[i].conv1d_stride1.dLdb.fill(0.0)
@@ -134,7 +102,6 @@ class CNN(object):
         self.linear_layer.dLdb.fill(0.0)
 
     def step(self):
-        # Do not modify this method
         for i in range(self.nlayers):
             self.convolutional_layers[i].conv1d_stride1.W = (self.convolutional_layers[i].conv1d_stride1.W -
                                               self.lr * self.convolutional_layers[i].conv1d_stride1.dLdW)
@@ -145,9 +112,7 @@ class CNN(object):
         self.linear_layer.b = (self.linear_layer.b -  self.lr * self.linear_layer.dLdb)
 
     def train(self):
-        # Do not modify this method
         self.train_mode = True
 
     def eval(self):
-        # Do not modify this method
         self.train_mode = False
